@@ -1,13 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 /// Service to manage Firebase authentication.
-class AuthService extends ChangeNotifier {
+class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  User? get currentUser => _auth.currentUser;
-
-  bool get isAuthenticated => currentUser != null;
+  /// Stream of authentication state changes.
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   /// Signs in a user using email and password.
   Future<User?> signInWithEmailAndPassword(String email, String password) async {
@@ -16,7 +14,6 @@ class AuthService extends ChangeNotifier {
         email: email,
         password: password,
       );
-      notifyListeners(); // Notify listeners of auth state change
       return userCredential.user;
     } catch (e) {
       print('Error signing in: $e');
@@ -31,7 +28,6 @@ class AuthService extends ChangeNotifier {
         email: email,
         password: password,
       );
-      notifyListeners(); // Notify listeners of auth state change
       return userCredential.user;
     } catch (e) {
       print('Error registering: $e');
@@ -42,6 +38,5 @@ class AuthService extends ChangeNotifier {
   /// Signs out the currently signed-in user.
   Future<void> signOut() async {
     await _auth.signOut();
-    notifyListeners(); // Notify listeners of auth state change
   }
 }

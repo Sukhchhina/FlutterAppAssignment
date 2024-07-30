@@ -29,19 +29,29 @@ class SignupPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 final authService = Provider.of<AuthService>(context, listen: false);
-                final user = await authService.registerWithEmailAndPassword(
-                  _emailController.text.trim(),
-                  _passwordController.text.trim(),
-                );
-                if (user != null) {
-                  context.go('/greeting');
-                } else {
+                try {
+                  final user = await authService.registerWithEmailAndPassword(
+                    _emailController.text.trim(),
+                    _passwordController.text.trim(),
+                  );
+                  if (user != null) {
+                    context.go('/greeting');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Signup failed. Please try again.')),
+                    );
+                  }
+                } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Signup failed. Please try again.')),
+                    SnackBar(content: Text('An error occurred. Please try again.')),
                   );
                 }
               },
               child: Text('Sign Up'),
+            ),
+            TextButton(
+              onPressed: () => context.go('/login'),
+              child: Text('Already have an account? Sign In'),
             ),
           ],
         ),
