@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 /// The CurrencyPage allows users to convert currencies.
 class CurrencyPage extends StatefulWidget {
   @override
@@ -22,7 +23,16 @@ class _CurrencyPageState extends State<CurrencyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Currency Converter')),
+      appBar: AppBar(
+        title: Text('Currency Converter'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // Navigate back to the GreetingPage using GoRouter
+            context.go('/greeting');
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

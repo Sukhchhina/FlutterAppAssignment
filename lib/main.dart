@@ -9,7 +9,9 @@ import 'pages/login.dart';
 import 'pages/signup.dart';
 import 'pages/weather.dart';
 import 'pages/currency.dart';
-import 'pages/calculator.dart';
+import 'pages/news_list_page.dart';
+import 'services/news_service.dart';
+import 'providers/news_provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -22,6 +24,9 @@ void main() async {
       providers: [
         Provider<AuthService>(
           create: (_) => AuthService(),
+        ),
+        ChangeNotifierProvider<NewsProvider>(
+          create: (_) => NewsProvider(newsService : NewsService()), // Pass NewsService to NewsProvider
         ),
       ],
       child: MyApp(),
@@ -38,50 +43,70 @@ class MyApp extends StatelessWidget {
         return StreamBuilder<User?>(
           stream: authService.authStateChanges,
           builder: (context, snapshot) {
+            // Determine if the user is authenticated
             final isAuthenticated = snapshot.data != null;
-            final initialRoute = isAuthenticated ? '/greeting' : '/login';
+
+            // Create and configure the GoRouter
+            final GoRouter router = GoRouter(
+              initialLocation: '/',
+              routes: [
+                // Default route with redirection based on auth state
+                GoRoute(
+                  path: '/',
+                  redirect: (context, state) => isAuthenticated ? '/greeting' : '/login',
+                ),
+                // Login page
+                GoRoute(
+                  path: '/login',
+                  builder: (context, state) => LoginPage(),
+                  redirect: (context, state) => isAuthenticated ? '/greeting' : null,
+                ),
+                // Signup page
+                GoRoute(
+                  path: '/signup',
+                  builder: (context, state) => SignupPage(),
+                  redirect: (context, state) => isAuthenticated ? '/greeting' : null,
+                ),
+                // Greeting page (protected route)
+                GoRoute(
+                  path: '/greeting',
+                  builder: (context, state) => GreetingPage(),
+                  redirect: (context, state) => isAuthenticated ? null : '/login',
+                ),
+                // Calculator page (protected route)
+                GoRoute(
+                  path: '/news_list_page',
+                  builder: (context, state) => NewsListPage(),
+                  redirect: (context, state) => isAuthenticated ? null : '/news_list_page',
+                ),
+                // Weather page (protected route)
+                GoRoute(
+                  path: '/weather',
+                  builder: (context, state) => WeatherPage(),
+                  redirect: (context, state) => isAuthenticated ? null : '/login',
+                ),
+                // Currency page (protected route)
+                GoRoute(
+                  path: '/currency',
+                  builder: (context, state) => CurrencyPage(),
+                  redirect: (context, state) => isAuthenticated ? null : '/login',
+                ),
+              ],
+              errorBuilder: (context, state) {
+                return Scaffold(
+                  body: Center(
+                    child: Text('Page not found: ${state.error}'),
+                  ),
+                );
+              },
+            );
 
             return MaterialApp.router(
               title: 'Flutter App',
               theme: ThemeData(
                 primarySwatch: Colors.blue,
               ),
-              routerConfig: GoRouter(
-                initialLocation: initialRoute,
-                routes: [
-                  GoRoute(
-                    path: '/',
-                    redirect: (context, state) {
-                      // Redirect based on authentication state
-                      return isAuthenticated ? '/greeting' : '/login';
-                    },
-                  ),
-                  GoRoute(
-                    path: '/login',
-                    builder: (context, state) => LoginPage(),
-                  ),
-                  GoRoute(
-                    path: '/signup',
-                    builder: (context, state) => SignupPage(),
-                  ),
-                  GoRoute(
-                    path: '/greeting',
-                    builder: (context, state) => GreetingPage(),
-                  ),
-                  GoRoute(
-                    path: '/calculator',
-                    builder: (context, state) => CalculatorPage(),
-                  ),
-                  GoRoute(
-                    path: '/weather',
-                    builder: (context, state) => WeatherPage(),
-                  ),
-                  GoRoute(
-                    path: '/currency',
-                    builder: (context, state) => CurrencyPage(),
-                  ),
-                ],
-              ),
+              routerConfig: router,
             );
           },
         );

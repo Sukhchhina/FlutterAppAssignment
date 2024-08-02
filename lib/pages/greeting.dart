@@ -33,8 +33,8 @@ class GreetingPage extends StatelessWidget {
               child: Text('Check Weather'),
             ),
             ElevatedButton(
-              onPressed: () => context.go('/calculator'),
-              child: Text('Calculate'),
+              onPressed: () => context.go('/news_list_page'),
+              child: Text('Latest News'),
             ),
             ElevatedButton(
               onPressed: () async {
