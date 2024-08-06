@@ -4,8 +4,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 /// The GreetingPage displays a welcome message and an image.
 class GreetingPage extends StatelessWidget {
+  final String email;
+
+  // Constructor to receive the email
+  const GreetingPage({Key? key, required this.email}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final userEmail = FirebaseAuth.instance.currentUser?.email ?? 'Unknown';
+
     return Scaffold(
       appBar: AppBar(title: Text('Welcome')),
       body: Center(
@@ -17,16 +24,19 @@ class GreetingPage extends StatelessWidget {
               style: TextStyle(fontSize: 24),
             ),
             SizedBox(height: 20),
-            /*
-            Image.network(
-              'https://example.com/welcome_image.png', // Replace with a valid URL or a local asset
+            Image.asset(
+              'lib/assets/performance.jpg',
               height: 200,
             ),
-            */
+            SizedBox(height: 20),
+            Text(
+              'Greetings: $userEmail',
+              style: TextStyle(fontSize: 18),
+            ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => context.go('/currency'),
-              child: Text('Check USD to CAD'),
+              child: Text('Check USD to EUR'),
             ),
             ElevatedButton(
               onPressed: () => context.go('/weather'),

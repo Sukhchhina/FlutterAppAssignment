@@ -70,7 +70,10 @@ class MyApp extends StatelessWidget {
                 // Greeting page (protected route)
                 GoRoute(
                   path: '/greeting',
-                  builder: (context, state) => GreetingPage(),
+                  builder: (context, state) {
+            final email = state.extra as String?;
+            return GreetingPage(email: email ?? 'Unknown');
+            },
                   redirect: (context, state) => isAuthenticated ? null : '/login',
                 ),
                 // Calculator page (protected route)
